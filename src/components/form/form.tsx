@@ -11,12 +11,52 @@ import { Confetti } from "@/components/confetti";
 import { useToast } from "@/components/toast-provider";
 import {
     EnvelopeIcon,
-    WalletIcon,
     CheckCircleIcon,
     ChatBubbleLeftRightIcon,
-    UserIcon
+    UserIcon,
+    GlobeAltIcon,
+    MapPinIcon
 } from "@heroicons/react/24/outline";
-import { validateEmail, validateTelegram, validateTwitter, validateWallet } from "@/lib/utils";
+import { validateEmail, validateTelegram, validateTwitter } from "@/lib/utils";
+
+// Country to region mapping
+const countryToRegion: Record<string, string> = {
+    // USA
+    'United States': 'USA',
+    // Europe
+    'Albania': 'Europe', 'Andorra': 'Europe', 'Austria': 'Europe', 'Belarus': 'Europe',
+    'Belgium': 'Europe', 'Bosnia and Herzegovina': 'Europe', 'Bulgaria': 'Europe',
+    'Croatia': 'Europe', 'Cyprus': 'Europe', 'Czech Republic': 'Europe', 'Denmark': 'Europe',
+    'Estonia': 'Europe', 'Finland': 'Europe', 'France': 'Europe', 'Germany': 'Europe',
+    'Greece': 'Europe', 'Hungary': 'Europe', 'Iceland': 'Europe', 'Ireland': 'Europe',
+    'Italy': 'Europe', 'Latvia': 'Europe', 'Liechtenstein': 'Europe', 'Lithuania': 'Europe',
+    'Luxembourg': 'Europe', 'Malta': 'Europe', 'Moldova': 'Europe', 'Monaco': 'Europe',
+    'Montenegro': 'Europe', 'Netherlands': 'Europe', 'North Macedonia': 'Europe',
+    'Norway': 'Europe', 'Poland': 'Europe', 'Portugal': 'Europe', 'Romania': 'Europe',
+    'Russia': 'Europe', 'San Marino': 'Europe', 'Serbia': 'Europe', 'Slovakia': 'Europe',
+    'Slovenia': 'Europe', 'Spain': 'Europe', 'Sweden': 'Europe', 'Switzerland': 'Europe',
+    'Ukraine': 'Europe', 'United Kingdom': 'Europe', 'Vatican City': 'Europe',
+    // UAE
+    'United Arab Emirates': 'UAE', 'Saudi Arabia': 'UAE', 'Qatar': 'UAE', 'Kuwait': 'UAE',
+    'Bahrain': 'UAE', 'Oman': 'UAE',
+    // LATAM
+    'Argentina': 'LATAM', 'Bolivia': 'LATAM', 'Brazil': 'LATAM', 'Chile': 'LATAM',
+    'Colombia': 'LATAM', 'Costa Rica': 'LATAM', 'Cuba': 'LATAM', 'Dominican Republic': 'LATAM',
+    'Ecuador': 'LATAM', 'El Salvador': 'LATAM', 'Guatemala': 'LATAM', 'Honduras': 'LATAM',
+    'Mexico': 'LATAM', 'Nicaragua': 'LATAM', 'Panama': 'LATAM', 'Paraguay': 'LATAM',
+    'Peru': 'LATAM', 'Uruguay': 'LATAM', 'Venezuela': 'LATAM',
+    // APAC
+    'Afghanistan': 'APAC', 'Australia': 'APAC', 'Bangladesh': 'APAC', 'Bhutan': 'APAC',
+    'Brunei': 'APAC', 'Cambodia': 'APAC', 'China': 'APAC', 'Fiji': 'APAC',
+    'India': 'APAC', 'Indonesia': 'APAC', 'Japan': 'APAC', 'Laos': 'APAC',
+    'Malaysia': 'APAC', 'Maldives': 'APAC', 'Myanmar': 'APAC', 'Nepal': 'APAC',
+    'New Zealand': 'APAC', 'North Korea': 'APAC', 'Pakistan': 'APAC', 'Papua New Guinea': 'APAC',
+    'Philippines': 'APAC', 'Singapore': 'APAC', 'South Korea': 'APAC', 'Sri Lanka': 'APAC',
+    'Taiwan': 'APAC', 'Thailand': 'APAC', 'Vietnam': 'APAC',
+};
+
+// List of all countries sorted alphabetically
+const countries = Object.keys(countryToRegion).sort();
 
 export const stepConfigs = [
     {
@@ -54,17 +94,36 @@ export const stepConfigs = [
     },
     {
         id: 4,
-        name: "Wallet",
-        title: "Enter your wallet address",
-        description: "Enter the wallet you use on Project 0. We'll determine your points and rank.",
-        icon: WalletIcon,
-        inputType: "text",
-        inputName: "wallet",
-        inputId: "wallet",
-        placeholder: "CYBE..7S6E"
+        name: "Country",
+        title: "Select your country",
+        description: "Choose the country you're located in.",
+        icon: MapPinIcon,
+        inputType: "select",
+        inputName: "country",
+        inputId: "country",
+        placeholder: "Select a country",
+        options: countries.map(country => ({ value: country, label: country }))
     },
     {
         id: 5,
+        name: "Region",
+        title: "Your region",
+        description: "Your region is automatically determined based on your country selection.",
+        icon: GlobeAltIcon,
+        inputType: "select",
+        inputName: "region",
+        inputId: "region",
+        placeholder: "Region will be auto-populated",
+        options: [
+            { value: "USA", label: "USA" },
+            { value: "Europe", label: "Europe" },
+            { value: "UAE", label: "UAE" },
+            { value: "LATAM", label: "LATAM" },
+            { value: "APAC", label: "APAC" }
+        ]
+    },
+    {
+        id: 6,
         name: "Confirmation",
         title: "Confirm your information",
         description: "We will never ask for your secret key or seed phrase.",
@@ -84,8 +143,6 @@ const validateField = (fieldName: string, value: string): string | null => {
             return validateTelegram(value);
         case 'twitter':
             return validateTwitter(value);
-        case 'wallet':
-            return validateWallet(value);
         default:
             return null;
     }
@@ -97,15 +154,14 @@ export const Form = ({ initialStep = 1 }: { initialStep?: number }) => {
         email: '',
         telegram: '',
         twitter: '',
-        wallet: ''
+        region: '',
+        country: ''
     });
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [isSubmitting, setIsSubmitting] = useState(false);
     // Add state to track successfully submitted emails
     const [successfullySubmittedEmail, setSuccessfullySubmittedEmail] = useState<string | null>(null);
     const { showToast } = useToast();
-    const [twitterProfileImage, setTwitterProfileImage] = useState<string>('');
-    const [isValidatingTwitter, setIsValidatingTwitter] = useState(false);
     // Add state to track if form is completed
     const [isFormCompleted, setIsFormCompleted] = useState(false);
     // Add state to trigger confetti
@@ -113,12 +169,23 @@ export const Form = ({ initialStep = 1 }: { initialStep?: number }) => {
 
     const currentConfig = stepConfigs[currentStep - 1];
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: value
-        }));
+        
+        // Auto-populate region when country is selected
+        if (name === 'country' && value) {
+            const region = countryToRegion[value] || '';
+            setFormData(prev => ({
+                ...prev,
+                country: value,
+                region: region
+            }));
+        } else {
+            setFormData(prev => ({
+                ...prev,
+                [name]: value
+            }));
+        }
 
         if (errors[name]) {
             setErrors(prev => ({
@@ -128,45 +195,12 @@ export const Form = ({ initialStep = 1 }: { initialStep?: number }) => {
         }
     };
 
-    // const validateTwitterField = async (twitterHandle: string): Promise<string | null> => {
-    //     // First do basic format validation
-    //     const formatError = validateTwitter(twitterHandle);
-    //     if (formatError) return formatError;
-
-    //     // Then check if the username exists
-    //     setIsValidatingTwitter(true);
-    //     try {
-    //         const exists = await validateTwitterExists(twitterHandle);
-    //         if (!exists) {
-    //             showToast('Twitter handle not found', 'error');
-    //             return null;
-    //         }
-            
-    //         // If valid, set the profile image
-    //         setTwitterProfileImage(getTwitterProfileImage(twitterHandle))
-    //         console.log('Twitter handle found', twitterProfileImage);
-    //         return null;
-    //     } catch (error) {
-    //         console.warn('Twitter validation error:', error);
-    //         return null; // Don't block on validation errors
-    //     } finally {
-    //         setIsValidatingTwitter(false);
-    //     }
-    // };
-
     const validateCurrentField = async (): Promise<boolean> => {
-        if (currentStep === 5) return true;
+        if (currentStep === 6) return true;
 
         const fieldName = currentConfig.inputName;
-        const fieldValue = formData[fieldName as keyof typeof formData];
         
         const error: string | null = null;
-        
-        // if (fieldName === 'twitter') {
-        //     error = await validateTwitterField(fieldValue);
-        // } else {
-        //     error = validateField(fieldName, fieldValue);
-        // }
 
         if (error) {
             setErrors(prev => ({
@@ -179,67 +213,9 @@ export const Form = ({ initialStep = 1 }: { initialStep?: number }) => {
         return true;
     };
 
-    const submitEmailToNewsletter = async (email: string): Promise<boolean> => {
-        try {
-            const response = await fetch('/api/newsletter', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ email }),
-            });
-
-            const result = await response.json();
-
-            if (response.ok) {
-                // Successfully signed up or already subscribed
-                showToast('Successfully subscribed', 'success');
-                // Cache the successfully submitted email
-                setSuccessfullySubmittedEmail(email);
-                return true;
-            } else {
-                const errorMessage = result.error || 'Failed to sign up for newsletter';
-                showToast(errorMessage, 'error');
-                setErrors(prev => ({
-                    ...prev,
-                    email: errorMessage
-                }));
-                return false;
-            }
-        } catch (error) {
-            console.error('Newsletter signup error:', error);
-            const errorMessage = 'An error occurred. Please try again.';
-            showToast(errorMessage, 'error');
-            setErrors(prev => ({
-                ...prev,
-                email: errorMessage
-            }));
-            return false;
-        }
-    };
-
     const handleNext = async () => {
         const isValid = await validateCurrentField();
         if (!isValid) return;
-
-        // If we're on the email step, check cache first before submitting
-        if (currentStep === 1) {
-            // Check if the current email was already successfully submitted
-            if (successfullySubmittedEmail === formData.email) {
-                // Skip API call, proceed to next step
-                setCurrentStep(currentStep + 1);
-                return;
-            }
-
-            // Email has changed or hasn't been submitted yet, make API call
-            setIsSubmitting(true);
-            const success = await submitEmailToNewsletter(formData.email);
-            setIsSubmitting(false);
-            
-            if (!success) {
-                return; // Don't proceed if newsletter signup failed
-            }
-        }
 
         if (currentStep < stepConfigs.length) {
             setCurrentStep(currentStep + 1);
@@ -262,7 +238,7 @@ export const Form = ({ initialStep = 1 }: { initialStep?: number }) => {
         }, 1000);
     };
 
-    const isCurrentFieldValid = currentStep === 5 || !validateField(
+    const isCurrentFieldValid = currentStep === 6 || !validateField(
         currentConfig.inputName,
         formData[currentConfig.inputName as keyof typeof formData]
     );
@@ -287,7 +263,7 @@ export const Form = ({ initialStep = 1 }: { initialStep?: number }) => {
 
                 <div className="p-8 mt-6 rounded-lg shadow-md outline-1 outline-gray-100">
                     <AnimatePresence mode="wait">
-                        {currentStep === 5 ? (
+                        {currentStep === 6 ? (
                             <motion.div
                                 key="confirmation"
                                 initial={{ opacity: 0, y: 20 }}
@@ -313,6 +289,8 @@ export const Form = ({ initialStep = 1 }: { initialStep?: number }) => {
                                 value={formData[currentConfig.inputName as keyof typeof formData] || ''}
                                 onChange={handleInputChange}
                                 error={errors[currentConfig.inputName]}
+                                options={(currentConfig as any).options}
+                                disabled={currentConfig.inputName === 'region'}
                             />
                         )}
                     </AnimatePresence>

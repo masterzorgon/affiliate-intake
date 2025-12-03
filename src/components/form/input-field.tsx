@@ -12,8 +12,10 @@ interface InputFieldProps {
     inputId: string;
     placeholder: string;
     value?: string;
-    onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    onChange?: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
     error?: string;
+    options?: { value: string; label: string }[];
+    disabled?: boolean;
 }
 
 export const InputField = ({
@@ -26,7 +28,9 @@ export const InputField = ({
     placeholder,
     value,
     onChange,
-    error
+    error,
+    options,
+    disabled = false
 }: InputFieldProps) => {
     return (
         <motion.div 
@@ -76,19 +80,50 @@ export const InputField = ({
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center">
                     <IconComponent className={`h-5 w-5 ${error ? 'text-red-400' : 'text-gray-400'}`} />
                 </div>
-                <input
-                    type={inputType}
-                    name={inputName}
-                    id={inputId}
-                    className={`py-4 block w-full pl-10 sm:text-sm rounded-md text-gray-900 ${
-                        error 
-                            ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
-                            : 'border-gray-300 focus:ring-vangardPurple focus:border-vangardPurple'  /* Fixed: removed the 'u' */
-                    }`}
-                    placeholder={placeholder}
-                    value={value}
-                    onChange={onChange}
-                />
+                {options ? (
+                    <select
+                        name={inputName}
+                        id={inputId}
+                        disabled={disabled}
+                        className={`py-4 block w-full pl-10 sm:text-sm rounded-md ${
+                            disabled 
+                                ? 'bg-gray-100 text-gray-500 cursor-not-allowed' 
+                                : 'text-gray-900'
+                        } ${
+                            error 
+                                ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
+                                : 'border-gray-300 focus:ring-vangardPurple focus:border-vangardPurple' 
+                        }`}
+                        value={value || ''}
+                        onChange={onChange as (e: React.ChangeEvent<HTMLSelectElement>) => void}
+                    >
+                        <option value="" disabled>{placeholder}</option>
+                        {options.map((option) => (
+                            <option key={option.value} value={option.value}>
+                                {option.label}
+                            </option>
+                        ))}
+                    </select>
+                ) : (
+                    <input
+                        type={inputType}
+                        name={inputName}
+                        id={inputId}
+                        disabled={disabled}
+                        className={`py-4 block w-full pl-10 sm:text-sm rounded-md ${
+                            disabled 
+                                ? 'bg-gray-100 text-gray-500 cursor-not-allowed' 
+                                : 'text-gray-900'
+                        } ${
+                            error 
+                                ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
+                                : 'border-gray-300 focus:ring-vangardPurple focus:border-vangardPurple' 
+                        }`}
+                        placeholder={placeholder}
+                        value={value}
+                        onChange={onChange as (e: React.ChangeEvent<HTMLInputElement>) => void}
+                    />
+                )}
             </motion.div>
             {error && (
                 <motion.p 

@@ -1,17 +1,19 @@
 import { ComponentType } from 'react';
 import {
     EnvelopeIcon,
-    WalletIcon,
     CheckCircleIcon,
     ChatBubbleLeftRightIcon,
-    UserIcon
+    UserIcon,
+    GlobeAltIcon,
+    MapPinIcon
 } from "@heroicons/react/24/outline";
 
 interface FormData {
     email: string;
     telegram: string;
-    wallet: string;
     twitter: string;
+    region: string;
+    country: string;
 }
 
 interface ConfirmationItem {
@@ -82,11 +84,16 @@ export const ConfirmationDisplay = ({
             displayFormat: (value: string) => value.startsWith('@') ? value : `@${value}`
         },
         { 
-            id: 'wallet',
-            label: "Wallet Address", 
-            value: formData.wallet, 
-            icon: WalletIcon,
-            displayFormat: (value: string) => value.length > 20 ? `${value.slice(0, 8)}...${value.slice(-8)}` : value
+            id: 'region',
+            label: "Region", 
+            value: formData.region, 
+            icon: GlobeAltIcon
+        },
+        { 
+            id: 'country',
+            label: "Country", 
+            value: formData.country, 
+            icon: MapPinIcon
         },
     ].filter(item => item.value && item.value.trim() !== '');
 

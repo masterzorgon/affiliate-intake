@@ -14,7 +14,8 @@ interface TwitterShareViewProps {
         email: string;
         telegram: string;
         twitter: string;
-        wallet: string;
+        region: string;
+        country: string;
     };
 }
 
@@ -49,8 +50,8 @@ export const TwitterShareView = ({ formData }: TwitterShareViewProps) => {
     const [isSubmittingProof, setIsSubmittingProof] = useState(false);
     const [urlError, setUrlError] = useState<string>('');
 
-    // Generate a simple referral code based on wallet address
-    const referralCode = `0dotxyz.com/waitlist?ref=${formData.wallet.slice(-8)}`;
+    // Generate a simple referral code based on email address
+    const referralCode = `0dotxyz.com/waitlist?ref=${formData.email.split('@')[0].slice(-8)}`;
 
     const generateBanner = async () => {
         try {
