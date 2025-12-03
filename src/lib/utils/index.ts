@@ -26,6 +26,19 @@ export function validateTwitter(twitter: string) {
     return null;
 };
 
+export function validateUrl(url: string) {
+    if (!url.trim()) return "Social platform link is required";
+    try {
+        const urlObj = new URL(url);
+        if (!['http:', 'https:'].includes(urlObj.protocol)) {
+            return "URL must start with http:// or https://";
+        }
+        return null;
+    } catch {
+        return "Please enter a valid URL (e.g., https://twitter.com/username)";
+    }
+};
+
 export function validateWallet(wallet: string) {
     if (!wallet.trim()) return "Wallet address is required";
     if (wallet.startsWith('0x')) return "Wallet address should not start with 0x";

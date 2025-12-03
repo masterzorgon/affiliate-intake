@@ -9,9 +9,13 @@ import {
 } from "@heroicons/react/24/outline";
 
 interface FormData {
+    name: string;
     email: string;
     telegram: string;
-    twitter: string;
+    socialPlatform?: string;
+    socialPlatformLink?: string;
+    twitter?: string;
+    preferredContactMethod: string;
     region: string;
     country: string;
 }
@@ -64,6 +68,12 @@ export const ConfirmationDisplay = ({
 }: ConfirmationDisplayProps) => {
     const confirmationItems: ConfirmationItem[] = [
         { 
+            id: 'name',
+            label: "Name", 
+            value: formData.name, 
+            icon: UserIcon 
+        },
+        { 
             id: 'email',
             label: "Email", 
             value: formData.email, 
@@ -77,11 +87,22 @@ export const ConfirmationDisplay = ({
             displayFormat: (value: string) => value.startsWith('@') ? value : `@${value}`
         },
         { 
-            id: 'twitter',
-            label: "Twitter", 
-            value: formData.twitter, 
+            id: 'socialPlatform',
+            label: formData.socialPlatform ? `${formData.socialPlatform} Profile` : "Social Platform", 
+            value: formData.socialPlatformLink || formData.twitter || '', 
             icon: UserIcon,
-            displayFormat: (value: string) => value.startsWith('@') ? value : `@${value}`
+            displayFormat: (value: string) => {
+                if (value.startsWith('http://') || value.startsWith('https://')) {
+                    return value;
+                }
+                return value.startsWith('@') ? value : `@${value}`;
+            }
+        },
+        { 
+            id: 'preferredContactMethod',
+            label: "Preferred Contact Method", 
+            value: formData.preferredContactMethod, 
+            icon: ChatBubbleLeftRightIcon
         },
         { 
             id: 'region',

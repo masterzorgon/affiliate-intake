@@ -1,10 +1,7 @@
 'use client'
 
-import { Nodes } from "@/components/nodes";
 import { GradientText } from "@/components/gradient-text";
-import EtherfiLogo from "@/images/logos/etherfi.svg";
 import Image from "next/image";
-import { BanknotesIcon } from "@heroicons/react/24/solid";
 
 export function Header() {
     return (
@@ -16,7 +13,7 @@ export function Header() {
                         <div className="relative flex flex-col items-center justify-center space-y-2 md:space-y-4">
                             <Image src="/images/logos/etherfi-icon.png" alt="Ether.fi" className="w-[50px] h-[50px]" width={50} height={50} />
                             <GradientText className="text-center font-semibold text-4xl md:text-5xl lg:text-7xl">
-                                Affiliate <br/> Intake Form
+                                Affiliate Form
                             </GradientText>
 
                             {/* <img src="/images/logos/P0.png" alt="Project 0 Logo" className="w-1/3 h-1/3" /> */}
@@ -24,8 +21,7 @@ export function Header() {
                             <div className="flex fixed top-6 sm:top-0 left-0 right-0 z-50 relative isolate flex items-center gap-x-6 overflow-hidden bg-gray-50 px-6 py-2.5 rounded-lg shadow-sm">
                                 <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
                                     <p className="text-xs/4 sm:text-sm/6 text-gray-900 flex items-center gap-x-1">
-                                        <strong className="text-md font-semibold">Become an Ether.fi Affiliate and earn rewards</strong>
-                                        <BanknotesIcon className="h-5 w-5 inline-block" />
+                                        <strong className="text-md font-semibold">Apply to join the Ether.fi Affiliate Program</strong>
                                     </p>
                                 </div>
                             </div>

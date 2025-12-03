@@ -16,6 +16,7 @@ interface InputFieldProps {
     error?: string;
     options?: { value: string; label: string }[];
     disabled?: boolean;
+    onEnter?: () => void;
 }
 
 export const InputField = ({
@@ -30,8 +31,15 @@ export const InputField = ({
     onChange,
     error,
     options,
-    disabled = false
+    disabled = false,
+    onEnter
 }: InputFieldProps) => {
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement | HTMLSelectElement>) => {
+        if (e.key === 'Enter' && !disabled && onEnter) {
+            e.preventDefault();
+            onEnter();
+        }
+    };
     return (
         <motion.div 
             className=""
@@ -96,6 +104,7 @@ export const InputField = ({
                         }`}
                         value={value || ''}
                         onChange={onChange as (e: React.ChangeEvent<HTMLSelectElement>) => void}
+                        onKeyDown={handleKeyDown}
                     >
                         <option value="" disabled>{placeholder}</option>
                         {options.map((option) => (
@@ -122,6 +131,7 @@ export const InputField = ({
                         placeholder={placeholder}
                         value={value}
                         onChange={onChange as (e: React.ChangeEvent<HTMLInputElement>) => void}
+                        onKeyDown={handleKeyDown}
                     />
                 )}
             </motion.div>
