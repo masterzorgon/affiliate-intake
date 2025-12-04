@@ -17,8 +17,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
     title: {
-        template: '%s - Project 0 Early Access',
-        default: 'Early Access - Project 0',
+        template: '%s - Ether.fi Affiliate Form',
+        default: 'Ether.fi Affiliate Form',
     },
 };
 
