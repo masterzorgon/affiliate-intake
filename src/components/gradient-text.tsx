@@ -13,7 +13,7 @@ export const GradientText = ({ children, className }: GradientTextProps) => {
             className={cn("inline-block py-1 text-4xl font-medium", className)}
             style={{
                 background:
-                    "linear-gradient(270deg, #AA87FA 40%, #1E468C 75%, #0A0A0A 100%)",
+                    "linear-gradient(270deg, #655EA8 40%, #1E468C 75%, #0A0A0A 100%)",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
                 backgroundClip: "text",
