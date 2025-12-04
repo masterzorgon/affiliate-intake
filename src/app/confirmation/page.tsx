@@ -1,78 +1,101 @@
 'use client'
 
+import { useEffect, useState } from 'react'
+import { Button } from '@/components/button'
 import { Header } from '@/components/header'
-import { TwitterIcon, LinkedInIcon, DiscordIcon, TelegramIcon, ArrowIcon } from '@/components/icons'
+import { Confetti } from '@/components/confetti'
+import { TwitterIcon, LinkedInIcon, ArrowIcon } from '@/components/icons'
+import { CheckBadgeIcon } from '@heroicons/react/24/solid'
+import { useRouter } from 'next/navigation'
 
 export default function ThankYouPage() {
+    const router = useRouter()
+    const [showConfetti, setShowConfetti] = useState(false)
+
+    useEffect(() => {
+        // Trigger confetti when page loads
+        setShowConfetti(true)
+    }, [])
+
     const socialLinks = [
         {
             name: 'Twitter',
-            url: 'https://twitter.com/0dotxyz',
+            url: 'https://x.com/ether_fi',
             icon: TwitterIcon,
             color: 'hover:text-blue-400'
         },
         {
             name: 'LinkedIn',
-            url: 'https://linkedin.com/company/0dotxyz',
+            url: 'https://www.linkedin.com/company/etherfi/posts/?feedView=all',
             icon: LinkedInIcon,
-            color: 'hover:text-blue-600'
-        },
-        {
-            name: 'Discord',
-            url: 'https://discord.gg/0dotxyz',
-            icon: DiscordIcon,
-            color: 'hover:text-indigo-500'
-        },
-        {
-            name: 'Telegram',
-            url: 'https://t.me/0dotxyz',
-            icon: TelegramIcon,
-            color: 'hover:text-blue-500'
+            color: 'hover:text-blue-400'
         }
     ]
 
     const bulletPoints = [
-        "Early access users will be selected at Project 0's discretion.",
-        "Users will be notified via email for early access.",
+        "Affiliates will be selected at Ether.fi's discretion.",
+        "Affiliates will notified of approval viaemail or Telegram.",
         "We will never ask for your secret key or seed phrase.",
         "Only one application per user."
     ]
 
     return (
         <main className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+            <Confetti trigger={showConfetti} onComplete={() => setShowConfetti(false)} />
             <Header />
-
-            <div className="flex flex-col items-center justify-center min-h-[calc(100vh-280px)]">
+            <div className="flex flex-col items-center justify-center mt-14">
                 <div className="text-center max-w-2xl mx-auto">
-                    <div className="w-15 h-15 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-8">
-                        <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                        </svg>
-                    </div>
 
-                    <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-                        Thank You for applying
-                    </h1>
-
-                    <div className="text-xl text-gray-600 mb-8 leading-relaxed space-y-4">
-                        {bulletPoints.map((point, index) => (
-                            <div key={index} className="flex items-center gap-2">
-                                <ArrowIcon className="size-8" />
-                                <span>{point}</span>
-                            </div>
-                        ))}
+                    <div className="p-6 md:p-8 mb-8">
+                        <h1 className="flex items-center justify-center gap-2 text-xl md:text-2xl font-bold text-gray-900 mb-6">
+                            <CheckBadgeIcon className="size-8 fill-green-500" />
+                            Application Recieved
+                        </h1>
+                        <div className="space-y-4"> 
+                            {bulletPoints.map((point, index) => (
+                                <div key={index} className="flex items-start gap-3 group text-sm md:text-base">
+                                    <div className="flex-shrink-0 mt-0.5">
+                                        <div className="w-6 h-6 rounded-full bg-gray-200 transition-colors flex items-center justify-center">
+                                            <ArrowIcon className="size-4 text-gray-700" />
+                                        </div>
+                                    </div>
+                                    <p className="text-start text-gray-700 leading-relaxed flex-1">
+                                        {point}
+                                    </p>
+                                </div>
+                            ))}
+                        </div>
+                        <Button
+                            variant="primary"
+                            className="w-full mt-10"
+                            onClick={() => window.open('https://ether.fi', '_blank')}
+                        >
+                            Create Ether.fi Account
+                        </Button>
                     </div>
 
                     <hr className="my-8 border-gray-200" />
 
-                    <p className="text-lg text-gray-500 mb-12">
-                        Stay connected with us for updates and announcements:
-                    </p>
-
-                    <div className="flex flex-wrap justify-center gap-6 mb-12">
-                        {socialLinks.map((social, index) => (
-                            <social.icon key={social.name} className="w-6 h-6 mb-2" />
-                        ))}
+                    <div className="flex flex-col items-center justify-center">
+                        <p className="text-lg text-gray-500 mb-4">
+                            Stay connected with us for updates and announcements:
+                        </p>
+                        <div className="flex flex-wrap justify-center gap-6">
+                            {socialLinks.map((social) => {
+                                const IconComponent = social.icon;
+                                return (
+                                    <a
+                                        key={social.name}
+                                        href={social.url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className={`text-gray-400 ${social.color} transition-colors`}
+                                    >
+                                        <IconComponent className="w-6 h-6" />
+                                    </a>
+                                );
+                            })}
+                        </div>
                     </div>
                 </div>
             </div>

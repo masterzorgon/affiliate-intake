@@ -1,12 +1,12 @@
 'use client'
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Progress } from "@/components/form/progress";
 import { InputField } from "@/components/form/input-field";
 import { ConfirmationDisplay } from "@/components/form/confirmation-display";
 import { FormNavigation } from "@/components/form/form-navigation";
-import { Confetti } from "@/components/confetti";
 import { useToast } from "@/components/toast-provider";
 import {
     EnvelopeIcon,
@@ -164,6 +164,7 @@ const validateField = (fieldName: string, value: string): string | null => {
 };
 
 export const Form = ({ initialStep = 1 }: { initialStep?: number }) => {
+    const router = useRouter();
     const [currentStep, setCurrentStep] = useState(initialStep);
     const [formData, setFormData] = useState({
         name: '',
@@ -177,11 +178,7 @@ export const Form = ({ initialStep = 1 }: { initialStep?: number }) => {
     });
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [isSubmitting, setIsSubmitting] = useState(false);
-    // Add state to track successfully submitted emails
-    const [successfullySubmittedEmail, setSuccessfullySubmittedEmail] = useState<string | null>(null);
     const { showToast } = useToast();
-    // Add state to trigger confetti
-    const [showConfetti, setShowConfetti] = useState(false);
 
     const currentConfig = stepConfigs[currentStep - 1];
 
@@ -311,9 +308,9 @@ export const Form = ({ initialStep = 1 }: { initialStep?: number }) => {
             const result = await response.json();
 
             if (result.success) {
-                setShowConfetti(true);
                 showToast('Form submitted successfully!', 'success');
-                // Optionally reset form or show success message
+                // Redirect to confirmation page after successful submission
+                router.push('/confirmation');
             } else {
                 // Show helpful message if available, otherwise show error message
                 const messageToShow = result.helpfulMessage || result.error || 'Failed to submit form. Please try again.';
@@ -350,11 +347,10 @@ export const Form = ({ initialStep = 1 }: { initialStep?: number }) => {
 
     return (
         <>
-            <Confetti trigger={showConfetti} onComplete={() => setShowConfetti(false)} />
             <section className="mx-auto w-[90%] sm:w-[80%] md:w-[70%] lg:w-[60%] xl:w-[50%] mb-22">
                 <Progress currentStep={currentStep} />
 
-                <div className="p-8 mt-6 rounded-lg shadow-md outline-1 outline-gray-100">
+                <div className="md:p-8 mt-6 rounded-lg md:shadow-md md:outline-1 md:outline-gray-100">
                     <AnimatePresence mode="wait">
                         {currentStep === stepConfigs.length ? (
                             <motion.div
@@ -534,7 +530,7 @@ export const Form = ({ initialStep = 1 }: { initialStep?: number }) => {
 
                 <div className="mt-6 text-sm text-center text-gray-400 max-w-sm sm:max-w-lg mx-auto">
                     <p>
-                        Affiliates will be chosen at Ether.fi's discretion.
+                        Affiliates will be onboarded at Ether.fi's discretion.
                     </p>
                 </div>
             </section>
