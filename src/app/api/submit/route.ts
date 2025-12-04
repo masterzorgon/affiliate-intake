@@ -7,7 +7,6 @@ export async function POST(request: NextRequest) {
   try {
     const data = await request.json();
 
-    // Validate required environment variables
     if (!process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL) {
       throw new Error('GOOGLE_SERVICE_ACCOUNT_EMAIL environment variable is not set');
     }
@@ -18,16 +17,11 @@ export async function POST(request: NextRequest) {
       throw new Error('GOOGLE_SHEET_ID environment variable is not set');
     }
     
-    // Process private key: handle various formats (quoted strings, escaped newlines, etc.)
     let privateKey = process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY;
-    // Remove surrounding quotes if present
     privateKey = privateKey.replace(/^["']|["']$/g, '');
-    // Replace escaped newlines with actual newlines
     privateKey = privateKey.replace(/\\n/g, '\n');
-    // Trim whitespace
     privateKey = privateKey.trim();
     
-    // Validate private key format
     if (!privateKey.includes('BEGIN PRIVATE KEY') && !privateKey.includes('BEGIN RSA PRIVATE KEY')) {
       throw new Error('Invalid private key format: must include BEGIN PRIVATE KEY or BEGIN RSA PRIVATE KEY markers');
     }
@@ -46,7 +40,6 @@ export async function POST(request: NextRequest) {
 
     const sheets = google.sheets({ version: 'v4', auth });
 
-    // Support both old twitter field and new socialPlatformLink field for backward compatibility
     const socialLink = data.socialPlatformLink || data.twitter || '';
     
     const values = [
